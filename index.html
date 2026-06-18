@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; connect-src 'self' https://api.openai.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data: https:;">
+  <title>알뜰비서 - AI 대학생 소비 분석 및 절약 코칭</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Outfit (English), Pretendard (Korean Fallback) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <i class="fa-solid fa-tiger brand-icon"></i>
+        <h1>알뜰비서</h1>
+      </div>
+      
+      <!-- User Profile Card -->
+      <div class="user-profile-card">
+        <div class="avatar">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="user-info">
+          <h3 id="profile-display-name">김고대</h3>
+          <p id="profile-display-major">불어불문학과 26학번</p>
+        </div>
+      </div>
+      
+      <!-- Menu Navigation -->
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <i class="fa-solid fa-chart-pie"></i> 대시보드
+        </button>
+        <button class="nav-item" data-tab="expenses">
+          <i class="fa-solid fa-wallet"></i> 소비 내역 입력
+        </button>
+        <button class="nav-item" data-tab="analytics">
+          <i class="fa-solid fa-chart-line"></i> 소비 통계
+        </button>
+        <button class="nav-item" data-tab="budget-savings">
+          <i class="fa-solid fa-piggy-bank"></i> 예산 & 저축 목표
+        </button>
+        <button class="nav-item" data-tab="ai-coaching">
+          <i class="fa-solid fa-robot"></i> AI 코칭 센터
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <i class="fa-solid fa-gear"></i> 설정
+        </button>
+      </nav>
+      
+      <!-- Footer French Quote -->
+      <div class="sidebar-footer">
+        <p class="quote">"Petit à petit, l'oiseau fait son nid."</p>
+        <p class="quote-translation">(티끌 모아 태산)</p>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Header -->
+      <header class="main-header">
+        <div class="header-title">
+          <h2 id="current-tab-title">대시보드</h2>
+          <p class="subtitle" id="header-subtitle">소비 현황을 한눈에 관리하고 절약 습관을 길러보세요.</p>
+        </div>
+        <div class="header-date" id="live-date">
+          <i class="fa-regular fa-calendar"></i> 2026년 6월 18일
+        </div>
+      </header>
+      
+      <!-- Scrollable Tab Content Container -->
+      <div class="content-body">
+        
+        <!-- Tab: Dashboard -->
+        <section class="tab-pane active" id="dashboard">
+          <div class="dashboard-grid">
+            
+            <!-- Widget: Budget Progress Card -->
+            <div class="glass-card span-2 highlight-card">
+              <div class="card-header">
+                <h3>이번 달 예산 현황</h3>
+                <span class="badge" id="budget-percentage">0% 소진</span>
+              </div>
+              <div class="budget-stat-row">
+                <div class="stat">
+                  <span class="label">총 예산</span>
+                  <span class="value" id="dash-total-budget">500,000원</span>
+                </div>
+                <div class="stat text-right">
+                  <span class="label">남은 예산</span>
+                  <span class="value accent-gold" id="dash-remaining-budget">500,000원</span>
+                </div>
+              </div>
+              <div class="progress-bar-container" id="budget-progress-container">
+                <div class="progress-bar" id="dash-budget-progress-bar" style="width: 0%"></div>
+              </div>
+              <div class="card-footer-tip" id="local-tip-container">
+                <i class="fa-solid fa-lightbulb icon-tip"></i>
+                <span id="local-tip-text">예산 설정 후 소비 내역을 입력하시면 절약 팁이 표시됩니다.</span>
+              </div>
+            </div>
+            
+            <!-- Widget: Fast Stats Box 1 -->
+            <div class="glass-card">
+              <div class="card-header">
+                <h3>이번 달 지출</h3>
+                <div class="stat-icon-bg crimson"><i class="fa-solid fa-arrow-trend-up"></i></div>
+              </div>
+              <div class="simple-stat-body">
+                <span class="huge-value text-crimson" id="dash-total-spent">0원</span>
+                <p class="sub-label">지난 달 대비 지출 분석 예정</p>
+              </div>
+            </div>
+            
+            <!-- Widget: Fast Stats Box 2 -->
+            <div class="glass-card">
+              <div class="card-header">
+                <h3>최다 지출 카테고리</h3>
+                <div class="stat-icon-bg gold"><i class="fa-solid fa-ranking-star"></i></div>
+              </div>
+              <div class="simple-stat-body">
+                <span class="huge-value text-gold" id="dash-top-category">없음</span>
+                <p class="sub-label" id="dash-top-category-spent">지출을 추가해 보세요.</p>
+              </div>
+            </div>
+            
+            <!-- Widget: Active Savings Goal Summary -->
+            <div class="glass-card span-2">
+              <div class="card-header">
+                <h3>저축 목표 진행 상황</h3>
+                <button class="text-btn" onclick="switchTab('budget-savings')">목표 관리 <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <div id="dash-goal-list" class="dash-goal-container">
+                <!-- Dynamically generated active savings goal status -->
+                <div class="no-data-msg">
+                  <i class="fa-solid fa-piggy-bank"></i>
+                  <p>등록된 저축 목표가 없습니다. '예산 & 저축 목표' 탭에서 새 목표를 세워보세요!</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Widget: Quick Chart Preview -->
+            <div class="glass-card span-2">
+              <div class="card-header">
+                <h3>소비 카테고리 분포</h3>
+                <button class="text-btn" onclick="switchTab('analytics')">상세 통계 <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <div class="chart-container-mini">
+                <canvas id="dashCategoryChart"></canvas>
+                <div id="dash-chart-no-data" class="chart-no-data-overlay">
+                  <span>등록된 소비 내역이 없습니다.</span>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+        <!-- Tab: Expenses Entry & Logs -->
+        <section class="tab-pane" id="expenses">
+          <div class="expense-layout">
+            
+            <!-- Input Form Card -->
+            <div class="glass-card form-card">
+              <h3>새 소비 입력</h3>
+              <form id="expense-form">
+                <div class="form-group">
+                  <label for="exp-date">소비 날짜</label>
+                  <input type="date" id="exp-date" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="exp-title">항목명</label>
+                  <div class="preset-input-wrapper">
+                    <input type="text" id="exp-title" placeholder="어떤 소비를 하셨나요? (예: 참살이길 술자리)" required autocomplete="off">
+                    <div class="preset-dropdown" id="preset-dropdown">
+                      <!-- University life presets -->
+                      <div class="preset-item" data-title="참살이길 술자리 🍺" data-category="음주/친목">참살이길 술자리 🍺 (음주/친목)</div>
+                      <div class="preset-item" data-title="개운사길 밥약 🍚" data-category="식비">개운사길 밥약 🍚 (식비)</div>
+                      <div class="preset-item" data-title="정대후문 카페 ☕" data-category="카페/디저트">정대후문 카페 ☕ (카페/디저트)</div>
+                      <div class="preset-item" data-title="고대빵 🥐" data-category="카페/디저트">고대빵 🥐 (카페/디저트)</div>
+                      <div class="preset-item" data-title="전공 원서 교재 구매 📚" data-category="문화/학습">전공 원서 교재 구매 📚 (문화/학습)</div>
+                      <div class="preset-item" data-title="안암역 지하철 🚇" data-category="교통/이동">안암역 지하철 🚇 (교통/이동)</div>
+                      <div class="preset-item" data-title="프랑스어 사전 앱 🇫🇷" data-category="문화/학습">프랑스어 사전 앱 🇫🇷 (문화/학습)</div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group half">
+                    <label for="exp-amount">금액 (원)</label>
+                    <input type="number" id="exp-amount" placeholder="0" min="0" required>
+                  </div>
+                  <div class="form-group half">
+                    <label for="exp-category">카테고리</label>
+                    <select id="exp-category" required>
+                      <option value="식비">식비 (학식/맛집)</option>
+                      <option value="음주/친목">음주/친목 (술자리)</option>
+                      <option value="카페/디저트">카페/디저트</option>
+                      <option value="교통/이동">교통/이동</option>
+                      <option value="문화/학습">문화/학습 (교재/어학)</option>
+                      <option value="쇼핑/패션">쇼핑/패션</option>
+                      <option value="기타">기타</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group half">
+                    <label for="exp-payment">결제 수단</label>
+                    <select id="exp-payment">
+                      <option value="카드">체크/신용카드</option>
+                      <option value="현금/계좌">현금/계좌이체</option>
+                    </select>
+                  </div>
+                  <div class="form-group half">
+                    <label for="exp-memo">메모</label>
+                    <input type="text" id="exp-memo" placeholder="간단한 메모 (선택)">
+                  </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary block-btn">
+                  <i class="fa-solid fa-plus"></i> 지출 등록
+                </button>
+              </form>
+            </div>
+            
+            <!-- List View Card -->
+            <div class="glass-card list-card">
+              <div class="list-header-row">
+                <h3>소비 내역 목록</h3>
+                <div class="filter-controls">
+                  <input type="text" id="search-exp" placeholder="검색...">
+                  <select id="filter-category">
+                    <option value="all">전체 카테고리</option>
+                    <option value="식비">식비</option>
+                    <option value="음주/친목">음주/친목</option>
+                    <option value="카페/디저트">카페/디저트</option>
+                    <option value="교통/이동">교통/이동</option>
+                    <option value="문화/학습">문화/학습</option>
+                    <option value="쇼핑/패션">쇼핑/패션</option>
+                    <option value="기타">기타</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="table-scroll">
+                <table class="expense-table">
+                  <thead>
+                    <tr>
+                      <th>날짜</th>
+                      <th>항목명</th>
+                      <th>카테고리</th>
+                      <th>결제</th>
+                      <th class="text-right">금액</th>
+                      <th class="text-center">삭제</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expense-list-tbody">
+                    <!-- Dynamic Rows -->
+                    <tr>
+                      <td colspan="6" class="text-center no-data">소비 내역이 없습니다. 새 지출을 추가해보세요.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+        <!-- Tab: Statistics & Charts -->
+        <section class="tab-pane" id="analytics">
+          <div class="analytics-grid">
+            
+            <!-- Category Chart Card -->
+            <div class="glass-card">
+              <div class="card-header">
+                <h3>카테고리별 지출 비율 (원형 그래프)</h3>
+              </div>
+              <div class="chart-container-large">
+                <canvas id="categoryPieChart"></canvas>
+                <div id="analytics-pie-no-data" class="chart-no-data-overlay">
+                  <span>지출 데이터를 입력하시면 원형 그래프가 생성됩니다.</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Monthly Trend Chart Card -->
+            <div class="glass-card">
+              <div class="card-header">
+                <h3>월별 지출 추이 (바 그래프)</h3>
+              </div>
+              <div class="chart-container-large">
+                <canvas id="monthlyTrendChart"></canvas>
+                <div id="analytics-bar-no-data" class="chart-no-data-overlay">
+                  <span>월별 통계 데이터를 구성 중입니다.</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Analytical Insights Card -->
+            <div class="glass-card span-2">
+              <div class="card-header">
+                <h3>소비 데이터 심층 분석</h3>
+              </div>
+              <div class="insight-details" id="spending-insight-details">
+                <div class="insight-row">
+                  <div class="insight-item">
+                    <span class="label">일평균 소비액</span>
+                    <span class="value" id="insight-daily-average">0원</span>
+                  </div>
+                  <div class="insight-item">
+                    <span class="label">가장 지출이 많은 요일</span>
+                    <span class="value" id="insight-top-day">데이터 부족</span>
+                  </div>
+                  <div class="insight-item">
+                    <span class="label">1회 최고 결제금액</span>
+                    <span class="value text-crimson" id="insight-max-single">0원</span>
+                  </div>
+                </div>
+                <div class="insight-summary-box">
+                  <h4>분석 소견</h4>
+                  <p id="insight-summary-text">충분한 지출 내역을 입력하시면 요일별 소비 비중 및 평균 소비 규모 데이터를 산정합니다.</p>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+        <!-- Tab: Budget & Savings Settings -->
+        <section class="tab-pane" id="budget-savings">
+          <div class="budget-savings-layout">
+            
+            <!-- Left Pane: Budget Settings & Rules -->
+            <div class="budget-setup-col">
+              <div class="glass-card">
+                <h3>한 달 권장 예산 설정</h3>
+                <p class="description">매월 지출 목표가 될 예산을 설정합니다. 예산의 소진 상태에 따라 실시간 알림과 경고등이 켜집니다.</p>
+                
+                <div class="budget-input-box">
+                  <label for="budget-input">월 예산 입력 (원)</label>
+                  <div class="input-with-button">
+                    <input type="number" id="budget-input" value="500000" min="0">
+                    <button class="btn btn-primary" id="btn-save-budget">적용</button>
+                  </div>
+                </div>
+                
+                <div class="budget-info-summary">
+                  <div class="info-row">
+                    <span>현재 설정된 예산</span>
+                    <strong id="budget-current-value">500,000원</strong>
+                  </div>
+                  <div class="info-row">
+                    <span>현재까지 지출액</span>
+                    <strong class="text-crimson" id="budget-current-spent">0원</strong>
+                  </div>
+                  <div class="info-row">
+                    <span>남은 사용량</span>
+                    <strong class="text-gold" id="budget-current-remaining">500,000원</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Pane: Savings Goals -->
+            <div class="goals-setup-col">
+              <div class="glass-card">
+                <div class="card-header">
+                  <h3>목표 저축 설정</h3>
+                  <button class="btn btn-secondary btn-sm" id="btn-show-add-goal">
+                    <i class="fa-solid fa-plus"></i> 새 목표 추가
+                  </button>
+                </div>
+                
+                <!-- Add Goal Form (Hidden by default) -->
+                <div id="add-goal-form-container" class="goal-form-wrapper hidden">
+                  <h4>새로운 저축 목표 수립</h4>
+                  <form id="goal-form">
+                    <div class="form-group">
+                      <label for="goal-name">목표명 (예: 프랑스 파리 교환학생 여행 ✈️)</label>
+                      <input type="text" id="goal-name" placeholder="목표를 적어보세요 (예: 불문과 과잠 구매)" required>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group half">
+                        <label for="goal-target">목표 금액 (원)</label>
+                        <input type="number" id="goal-target" placeholder="0" min="1000" required>
+                      </div>
+                      <div class="form-group half">
+                        <label for="goal-deadline">달성 목표일</label>
+                        <input type="date" id="goal-deadline" required>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="goal-memo">설명 / 다짐</label>
+                      <input type="text" id="goal-memo" placeholder="나에게 동기를 부여하는 한마디">
+                    </div>
+                    <div class="form-actions">
+                      <button type="submit" class="btn btn-primary btn-sm">저장</button>
+                      <button type="button" class="btn btn-cancel btn-sm" id="btn-hide-add-goal">취소</button>
+                    </div>
+                  </form>
+                </div>
+                
+                <!-- Goals List -->
+                <div class="goals-list-container" id="goals-list">
+                  <!-- Dynamic Goals Items -->
+                  <div class="no-data-msg">
+                    <i class="fa-solid fa-piggy-bank"></i>
+                    <p>등록된 저축 목표가 없습니다. 목표를 수립하고 차곡차곡 모아보세요!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+        <!-- Tab: AI Coaching Center -->
+        <section class="tab-pane" id="ai-coaching">
+          <div class="ai-coaching-layout">
+            
+            <!-- Left Side: Diagnostics -->
+            <div class="ai-diagnostic-col">
+              <div class="glass-card stretch-height">
+                <div class="ai-profile-header">
+                  <div class="ai-avatar">
+                    <i class="fa-solid fa-robot"></i>
+                  </div>
+                  <div class="ai-profile-meta">
+                    <h3>알뜰 호돌이 Pierre</h3>
+                    <span class="status-online"><span class="dot"></span> AI 소비 코치</span>
+                  </div>
+                </div>
+                
+                <div class="ai-intro-text">
+                  <p>봉주르! 불어불문학과 26학번 동문님. 저는 고려대의 상징인 호랑이 기상과 프랑스 집사의 세련된 절약 지혜를 겸비한 AI 코치 **알뜰 호돌이(Pierre)**입니다.</p>
+                  <p>현재까지 작성된 소비 리포트와 예산 달성 비율을 분석하여 정밀한 AI 절약 진단서를 제공해 드립니다.</p>
+                </div>
+                
+                <div class="diagnostic-actions">
+                  <button class="btn btn-primary block-btn glowing-btn" id="btn-generate-report">
+                    <i class="fa-solid fa-signature"></i> AI 정밀 소비 진단서 발행하기
+                  </button>
+                </div>
+                
+                <!-- Report Display Area -->
+                <div class="diagnostic-report-container" id="diagnostic-report-output">
+                  <div class="report-placeholder">
+                    <i class="fa-regular fa-file-lines"></i>
+                    <p>위 버튼을 누르시면 이번 달 지출 내역 전체를 분석한 맞춤형 AI 리포트가 발행됩니다.</p>
+                    <p class="small">* 설정 탭에서 OpenAI API 키가 정상적으로 설정되어 있어야 합니다.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Right Side: AI Chatbot -->
+            <div class="ai-chat-col">
+              <div class="glass-card chat-card-container">
+                <div class="chat-header">
+                  <h4>알뜰 호돌이와 1:1 상담</h4>
+                  <span class="chat-sub">"이 술자리 가도 될까요?", "절약 팁 알려줘!"</span>
+                </div>
+                
+                <!-- Messages Box -->
+                <div class="chat-messages-box" id="chat-messages">
+                  <div class="message system-msg">
+                    <div class="msg-bubble">
+                      안녕하세요! 26학번 새내기 동문님 🐯 지출 고민이나 절약 비법이 궁금하시면 언제든 물어보세요!
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Input Box -->
+                <div class="chat-input-area">
+                  <input type="text" id="chat-user-input" placeholder="호돌이에게 지출 타당성을 검증받으세요...">
+                  <button class="btn btn-primary btn-icon" id="btn-send-chat">
+                    <i class="fa-solid fa-paper-plane"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+        <!-- Tab: Settings -->
+        <section class="tab-pane" id="settings">
+          <div class="settings-layout">
+            
+            <!-- Profile Settings -->
+            <div class="glass-card">
+              <h3>프로필 설정</h3>
+              <form id="settings-profile-form">
+                <div class="form-row">
+                  <div class="form-group third">
+                    <label for="set-name">이름</label>
+                    <input type="text" id="set-name" value="김고대" required>
+                  </div>
+                  <div class="form-group third">
+                    <label for="set-major">학과</label>
+                    <input type="text" id="set-major" value="불어불문학과" required>
+                  </div>
+                  <div class="form-group third">
+                    <label for="set-classof">학번</label>
+                    <input type="text" id="set-classof" value="26" placeholder="예: 26" required>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">프로필 저장</button>
+              </form>
+            </div>
+            
+            <!-- API Key Settings -->
+            <div class="glass-card">
+              <h3>OpenAI API 인증 설정</h3>
+              <p class="description">AI 코칭 및 챗봇 기능을 연동하기 위해 OpenAI API 키가 필요합니다. 입력된 키는 로컬 보안 저장 공간에만 보관됩니다.</p>
+              
+              <div class="api-key-box">
+                <div class="form-group">
+                  <label for="set-api-key">OpenAI API Key (sk-...)</label>
+                  <div class="input-with-button">
+                    <input type="password" id="set-api-key" placeholder="sk-proj-...">
+                    <button class="btn btn-secondary" id="btn-toggle-key-visible"><i class="fa-solid fa-eye"></i></button>
+                    <button class="btn btn-primary" id="btn-save-api-key">저장</button>
+                  </div>
+                </div>
+                <span class="status-indicator success hidden" id="api-key-status">
+                  <i class="fa-solid fa-circle-check"></i> API 키가 등록되었습니다.
+                </span>
+                <span class="status-indicator warning" id="api-key-status-missing">
+                  <i class="fa-solid fa-circle-exclamation"></i> API 키가 없습니다. AI 서비스를 활성화하려면 키를 등록해 주세요.
+                </span>
+              </div>
+            </div>
+            
+            <!-- Data Management -->
+            <div class="glass-card">
+              <h3>데이터 관리 및 복구</h3>
+              <p class="description">로컬 데이터 파일 경로 및 초기화 도구입니다.</p>
+              
+              <div class="data-path-box">
+                <label>데이터 파일 저장 위치</label>
+                <div class="path-display" id="data-file-path-display">
+                  로딩 중...
+                </div>
+              </div>
+              
+              <div class="danger-zone">
+                <h4>위험 구역</h4>
+                <p class="description">앱의 모든 설정, 소비 내역, 저축 목표가 영구 삭제됩니다. 복구할 수 없습니다.</p>
+                <button class="btn btn-danger" id="btn-reset-all">
+                  <i class="fa-solid fa-trash-can"></i> 전체 데이터 초기화
+                </button>
+              </div>
+            </div>
+            
+          </div>
+        </section>
+        
+      </div>
+    </main>
+    
+  </div>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Renderer JavaScript -->
+  <script src="renderer.js"></script>
+</body>
+</html>
